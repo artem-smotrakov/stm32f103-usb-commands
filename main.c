@@ -106,12 +106,13 @@ void usart_send_string(char *s) {
 }
 
 void handle_command(char *command) {
-    if (is_equal(command, "led_on") == 0) {
+    if (is_equal(command, A1_ON) == 0) {
         turn_on_pa1();
-    }
-
-    if (is_equal(command, "led_off") == 0) {
+    } else if (is_equal(command, A1_OFF) == 0) {
         turn_off_pa1();
+    } else {
+        usart_send_string(UNKNOWN_COMMAND);
+        usart_send_string(CRLF);
     }
 }
 
@@ -124,19 +125,20 @@ void USART1_IRQHandler() {
     if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
         received = USART_ReceiveData(USART1);
 
-        if (received == 13) {
-            usart_buf[usart_buf_length++] = 0;
-            usart_send_string("Received command: ");
-            usart_send_string(usart_buf);
-            usart_send(10);
-            usart_send(13);
+        if (received == CR) {
+            usart_buf[usart_buf_length] = 0;
+            usart_send_string(CRLF);
 
             handle_command(usart_buf);
-            memset(usart_buf, 0, sizeof(usart_buf));
             usart_buf_length = 0;
+        } else if (received == LF) {
+            // ignore
         } else {
             // TODO: check for overflow
             usart_buf[usart_buf_length++] = received;
+
+            // echo
+            usart_send(received);
         }
     }
 }

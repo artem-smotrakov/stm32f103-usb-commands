@@ -5,9 +5,16 @@
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_rcc.h>
 #include <stm32f10x_usart.h>
-#include <string.h>
-//#include <stdio.h>
 
-#define DELAY 1500  // in millis
+#define CR '\r'
+#define LF '\n'
+#define CRLF "\r\n"
+
+// commands
+#define A1_ON  "a1 on"
+#define A1_OFF "a1 off"
+
+// messages
+#define UNKNOWN_COMMAND "unknown command"
 
 #endif
