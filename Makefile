@@ -10,7 +10,7 @@ SOURCES += $(STD_PERIPH_LIBS)/Libraries/STM32F10x_StdPeriph_Driver/src/stm32f10x
 SOURCES += $(STD_PERIPH_LIBS)/Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s
 
 # name for output binary files
-PROJECT ?= led
+PROJECT ?= usb-commands
 
 # compiler, objcopy (should be in PATH)
 CC = arm-none-eabi-gcc
