@@ -92,17 +92,26 @@ void usart_init() {
 }
 
 // send one byte through USART
-void usart_send(char chr) {
+void usart_send(const char chr) {
     while(!(USART1->SR & USART_SR_TC));
     USART1->DR = chr;
 }
 
 // send a string through USART
-void usart_send_string(char *s) {
+void usart_send_string(const char *s) {
     int i=0;
     while (s[i]) {
         usart_send(s[i++]);
     }
+}
+
+void usart_send_newline(void) {
+    usart_send_string(CRLF);
+}
+
+void usart_send_line(const char *s) {
+    usart_send_string(s);
+    usart_send_string(CRLF);
 }
 
 void handle_command(char *command) {
@@ -111,8 +120,7 @@ void handle_command(char *command) {
     } else if (is_equal(command, A1_OFF) == 0) {
         turn_off_pa1();
     } else {
-        usart_send_string(UNKNOWN_COMMAND);
-        usart_send_string(CRLF);
+        usart_send_line(UNKNOWN_COMMAND);
     }
 }
 
@@ -127,7 +135,7 @@ void USART1_IRQHandler() {
 
         if (received == CR) {
             usart_buf[usart_buf_length] = 0;
-            usart_send_string(CRLF);
+            usart_send_newline();
 
             handle_command(usart_buf);
             usart_buf_length = 0;
@@ -135,9 +143,8 @@ void USART1_IRQHandler() {
             // ignore
         } else {
             if (usart_buf_length == COMMAND_MAX_LENGTH) {
-                usart_send_string(CRLF);
-                usart_send_string(COMMAND_TOO_LONG);
-                usart_send_string(CRLF);
+                usart_send_newline();
+                usart_send_line(COMMAND_TOO_LONG);
                 usart_buf_length = 0;
                 return;
 
