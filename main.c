@@ -116,7 +116,7 @@ void handle_command(char *command) {
     }
 }
 
-char usart_buf[32];
+char usart_buf[COMMAND_MAX_LENGTH];
 unsigned short usart_buf_length=0;
 
 void USART1_IRQHandler() {
@@ -134,7 +134,15 @@ void USART1_IRQHandler() {
         } else if (received == LF) {
             // ignore
         } else {
-            // TODO: check for overflow
+            if (usart_buf_length == COMMAND_MAX_LENGTH) {
+                usart_send_string(CRLF);
+                usart_send_string(COMMAND_TOO_LONG);
+                usart_send_string(CRLF);
+                usart_buf_length = 0;
+                return;
+
+            }
+
             usart_buf[usart_buf_length++] = received;
 
             // echo
